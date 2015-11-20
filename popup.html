@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Glint Extension Popup</title>
+    <style>
+        body {
+            font-family: Roboto, "Segoe UI", "Lucida Grande", sans-serif;
+            font-size: 100%;
+            margin: 0px;
+            width: 300px;
+            height: 450px;
+        }
+        a {
+            text-decoration: none;
+        }
+        .glint-header{
+            width: 100%;
+            text-align: center;
+        }
+        #logo{
+            width: 200px;
+        }
+        .company-container{
+            width: 100%;
+            text-align: center;
+            display: inline-block;
+            padding-left: 25px;
+            padding-right: 25px;
+            margin-top: 35px;
+        }
+        .title{
+            color: #33adda;
+            font-size: 12px;
+            font-weight: 200;
+            text-align: center;
+            width: 250px;
+            padding: 0px 25px;
+            margin-top: -50px;
+        }
+        .submittedForm{
+            color: #33adda;
+            font-size: 12px;
+            font-weight: 200;
+            text-align: center;
+            width: 250px;
+            padding: 0px 25px;
+            margin-top: 35px;
+        }
+        .company-field{
+            width: 225px;
+            height: 30px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            border: 1px solid #33adda;
+            font-size: 14px;
+            padding-left: 5px;
+        }
+        .form-container{
+            padding-left: 10px;
+            float: left;
+        }
+        .submit-container{
+            float: left;
+            margin-left: -50px;
+        }
+        .submit{
+            width: 50px;
+            height: 24px;
+            text-align: center;
+            padding-top: 10px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            background-color: #33adda;
+            font-size: 10px;
+            color: #fff;
+            cursor: pointer;
+        }
+        #submitted, #cleared{
+            display: none;
+        }
+        input[type="text"], input[type="password"], textarea, select { 
+            outline: none;
+        }
+        .clear-container{
+            width: 100%;
+        }
+        .clear{
+            margin: 0 auto;
+            width: 235px;
+            height: 24px;
+            padding-top: 10px;
+            text-align: center;
+            border-radius: 5px;
+            background-color: #33adda;
+            font-size: 10px;
+            color: #fff;
+            margin-top: 15px;
+            cursor: pointer;          
+        }
+    </style>
+    <script src="popup.js"></script>
+</head>
+<body id="msi-body">
+    <div class = "glint-header">
+        <img id = "logo" src = "">
+    </div>
+    <div class = "title">
+        Insert the name of the company you're demoing to below
+    </div>
+    <div class = "company-container">
+        <div class = "form-container">
+            <input id = "input" class = "company-field" type="text" name="name">
+        </div>
+        <div class = "submit-container">
+            <div id = "submit-button" class = "submit">
+                Submit
+            </div>
+        </div>
+    </div>
+    <div class = "clear-container">
+        <div id = "clear-button" class = "clear">
+            Clear Company
+        </div>
+    </div>
+    <div id = "submitted" class = "submittedForm">
+        The company name has been submitted and will replace "Thrive Inc" in the survey. <br>
+        NOTE: make sure to refresh twice <b> and check </b> to see if the name of the company is there.
+    </div>
+    <div id = "cleared" class = "submittedForm">
+        The company name has been changed back to "Thrive Inc".
+    </div>
+
+</body>
+</html>
