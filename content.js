@@ -28,6 +28,7 @@ var inSurvey = new RegExp('app.glintinc.com/thrive@demo2#/questionnaire/preview'
         commentKeyword = new RegExp('available career pathing'),
         welcome = new RegExp('Welcome to the Glint Pulse.'),
         dashboard = new RegExp('dashboard'),
+        survey = new RegExp('surveys'),
         lunchSnippet = new RegExp('Lunch is repetitive'),
         careerPathingWords = [
             "<b>Available career pathing</b> is very limited in the sales organization.",
@@ -136,7 +137,7 @@ window.onload = function(){
     // we're then going to do a check to see if theyre on the 'available career pathing' option in the cloudwords. 
     // once we figure that out we need to make sure all of the comments have fully loaded 
     // we need this to run when the app is loaded or when the page is reloaded on the results tab so we need to check if theyre on the home page
-    if(dashboard.test(window.location.href) || results.test(window.location.href)){
+    if(dashboard.test(window.location.href) || results.test(window.location.href) || survey.test(window.location.href)){
         console.log("App or Results Page > Loaded");
         // We then need to check if theyre on the comments page afterward using an interval. 
         // If we don't then we'll never know if they visit the page without them refreshing
