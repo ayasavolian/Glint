@@ -20,25 +20,45 @@ console.log("Glint Plugin > Running");
 // *************************************************************************************
 
 var inSurvey = new RegExp('app.glintinc.com/thrive@demo2#/questionnaire/preview'),
-    thanks = new RegExp('app.glintinc.com/thrive@demo2#/questionnaire/done/preview'),
-    survey = new RegExp('app.glintinc.com/thrive@demo2#/questionnaire/'),
-    results = new RegExp('results'),
-    comments = new RegExp('comments'),
-    commentKeyword = new RegExp('available career pathing'),
-    welcome = new RegExp('Welcome to the Glint Pulse.'),
-    dashboard = new RegExp('dashboard'),
-    careerPathingWords = [
-        "<b>Available career pathing</b> is very limited in the sales organization.",
-        "I am routinely told that <b> available career pathing </b> will be prioritized, but it never materializes.",
-        "We need to put a greater emphasis on <b>available career pathing</b>.",
-        "<b>Available career pathing</b> is not a major priority for my manager.",
-        "I have been thoroughly impressed with the <b>available career pathing</b> for recent college graduates.",
-        "<b>Available career pathing</b> was billed as a key cultural value in the interview process but hasn't lived up to expectations.",
-        "<b>Available career pathing</b> is discussed in every quarterly review that I have with my manager. They show a strong commitment to my development.",
-        "I am not happy with the <b>available career pathing</b> my manager provides.",
-        "I am frustrated by the <b>available career pathing</b> that has been available so far. I hope there are improvements.",
-        "I am happy with the <b>available career pathing</b> in my current job."
-    ]
+        thanks = new RegExp('app.glintinc.com/thrive@demo2#/questionnaire/done/preview'),
+        survey = new RegExp('app.glintinc.com/thrive@demo2#/questionnaire/'),
+        results = new RegExp('results'),
+        comments = new RegExp('comments'),
+        commentKeyword = new RegExp('available career pathing'),
+        welcome = new RegExp('Welcome to the Glint Pulse.'),
+        dashboard = new RegExp('dashboard'),
+        lunchSnippet = new RegExp('Lunch is repetitive'),
+        careerPathingWords = [
+            "<b>Available career pathing</b> is very limited in the sales organization.",
+            "I am routinely told that <b> available career pathing </b> will be prioritized, but it never materializes.",
+            "We need to put a greater emphasis on <b>available career pathing</b>.",
+            "<b>Available career pathing</b> is not a major priority for my manager.",
+            "I have been thoroughly impressed with the <b>available career pathing</b> for recent college graduates.",
+            "<b>Available career pathing</b> was billed as a key cultural value in the interview process but hasn't lived up to expectations.",
+            "<b>Available career pathing</b> is discussed in every quarterly review that I have with my manager. They show a strong commitment to my development.",
+            "I am not happy with the <b>available career pathing</b> my manager provides.",
+            "I am frustrated by the <b>available career pathing</b> that has been available so far. I hope there are improvements.",
+            "I am happy with the <b>available career pathing</b> in my current job."
+        ],
+        snippetsWords = [
+        "I feel like our culture has improved a lot but I'd still like to see more for the available career pathing. My manager has been talking about improvements but little has happened.",
+        "We could really use a team for volunteers and philanthropy. We don't do enough in the community and it's important to give back.",
+        "I believe our senior management team has been doing a great job at making improvements to our culture but could make even more improvements to our available career pathing.",
+        "All hands meetings are sporadic and late in the day often on Fridays. This impacts being able to plan ahead for work or personal engagement. I suggest setting up a schedule and agenda to make these more effective.",
+        "We've done a great recruiting job with the new hires! They are learning so fast and quickly are becoming big assets to our teams based on what I've been hearing.",
+        "I feel that I am able to take time off when I need it, I love our open PTO policy! It's been a big improvement to the culture that we have been improving.",
+        "I love our new awesome perks! We really have made big strides in having more amenities available, especially with snacks. Our senior management team's decision to include nap pods was also a great addition.",
+        "We have been improving in so many areas, but the one area I think we can still improve on is our available career pathing. I feel like my manager hasn't done a great job of improving.",
+        ],
+        whatElseWords = [
+        "Management has made a lot of improvements but one that is needed and still lingering is the available career pathing. I just feel like I don't have the ability to progress in my career here.",
+        "I really feel like the available career pathing still needs attention. Besides that the culture has been improving tremendously!",
+        "I feel like our culture has improved a lot but I'd still like to see more for the available career pathing. My manager has been talking about improvements but little has happened.",
+        "I believe our senior management team has been doing a great job at making improvements to our culture but could make even more improvements to our available career pathing.",
+        "I feel that I am able to take time off when I need it, I love our open PTO policy! It's been a big improvement to the culture that we have been improving.",
+        "I love our new awesome perks! We really have made big strides in having more amenities available, especially with snacks. Our senior management team's decision to include nap pods was also a great addition.",
+        "We have been improving in so many areas, but the one area I think we can still improve on is our available career pathing. I feel like my manager hasn't done a great job of improving.",
+        ];
 
 window.onload = function(){
     console.log("Page > Loaded");
@@ -60,7 +80,7 @@ window.onload = function(){
             if(companyName != null){
                 console.log("Company > " + companyName);
                 // we wait for the page to actually load and then grab the contents of it
-                function pageListen() {
+                var pageListen = function() {
                     // we grab the main intro section and also we need to grab the first question posed
                     // the first question has the company name as well asking how happy you are there
                     var intro = document.getElementsByClassName("col-unit-complement");
@@ -96,7 +116,7 @@ window.onload = function(){
         }
         // We need to check if there is a hashchange on the url by using our regex for the questionnaire being done
         // We do this by using an interval that runs every 100 milliseconds. We might want to revisit this.
-        function changePage() {
+        var changePage = function() {
             if(thanks.test(window.location.href)){
                 console.log("Thank You > Loaded");
                 var companyName = localStorage.getItem('company'),
@@ -119,10 +139,10 @@ window.onload = function(){
         console.log("App or Results Page > Loaded");
         // We then need to check if theyre on the comments page afterward using an interval. 
         // If we don't then we'll never know if they visit the page without them refreshing
-        function commentsPage() {
+        var commentsPage = function() {
             if(comments.test(window.location.href)){
                 console.log("Comments Page > Loaded");
-                function commentsListen() {
+                var commentsListen = function() {
                     // checking to see if the keyword is defined on the comments page. The reason is because the comments bar
                     // only shows when youre looking at a specific keyword. 
                     if(typeof document.getElementsByClassName("keyword")[0] != "undefined"){
@@ -135,16 +155,12 @@ window.onload = function(){
                                 var commentsListArray = commentsList.childNodes;
                                 if(typeof commentsListArray[200].childNodes[3].innerHTML != "undefined"){
                                     // a double check to make sure that the actual comment text has available career pathing and is loaded
-                                    var commentsListArray = commentsList.childNodes;
-                                    var commentCheck = commentsListArray[6].childNodes[3];
-                                    var commentTextCheck = commentCheck.childNodes[1].innerHTML;
+                                    var commentTextCheck = commentsList.childNodes[6].childNodes[3].innerHTML;
                                     if(commentKeyword.test(commentTextCheck)){
                                         console.log("Career Pathing Comment > Loaded");
-                                        var y = 0;
                                         // loop through all of the comments and give them one of the comments from the careerPathingWords array defined
-                                        for(var x = 2; x < commentsListArray.length;){
-                                            var comment = commentsListArray[x].childNodes[3];
-                                            var commentText = comment.childNodes[1];
+                                        for(var x = 2, y = 0; x < commentsListArray.length;){
+                                            var commentText = commentsListArray[x].childNodes[3].childNodes[1];
                                             commentText.innerHTML = careerPathingWords[y];
                                             x = x + 2;
                                             y++;
@@ -158,6 +174,57 @@ window.onload = function(){
                         }
                     }
                 }
+                var snippetsListen = function(){
+                    if(typeof document.getElementsByClassName("snippets")[0] != "undefined"){
+                        var snippetSection = document.getElementsByClassName("snippets")[0].childNodes[3];
+                        var snippetColumnOne = snippetSection.childNodes[2].childNodes;
+                        var snippetColumnTwo = snippetSection.childNodes[4].childNodes;
+                        var snippetTest = snippetColumnOne[snippetColumnOne.length-3].childNodes[1].childNodes[3];
+                        if(typeof snippetTest != "undefined"){
+                            for(var x = 2, y = 0; x < snippetColumnOne.length;){
+                                var snippetOne = snippetColumnOne[x].childNodes[1].childNodes[3];
+                                var snippetTwo = snippetColumnTwo[x].childNodes[1].childNodes[3];
+                                snippetOne.innerHTML = snippetsWords[y];
+                                y++;
+                                snippetTwo.innerHTML = snippetsWords[y];
+                                y++;
+                                x = x + 2;
+                                if(y == snippetsWords.length)
+                                    y = 0;
+                                window.clearInterval(snippetsLoad);
+                            }
+                        }
+                    }
+                }
+                var dropDownListen = function(){
+                    if(typeof document.getElementsByClassName("trigger")[5] != "undefined"){
+                        var content = document.getElementsByClassName('trigger')[5].childNodes[4].innerHTML;
+                        if(content == "What else?"){
+                            var snippetSection = document.getElementsByClassName("snippets")[0].childNodes[3];
+                            var snippetColumnOne = snippetSection.childNodes[2].childNodes;
+                            var snippetColumnTwo = snippetSection.childNodes[4].childNodes;
+                            var snippetTest = snippetColumnOne[snippetColumnOne.length-3].childNodes[1].childNodes[3].innerHTML;
+                            if(lunchSnippet.test(snippetTest)){
+                                if(typeof snippetTest != "undefined"){
+                                    for(var x = 2, y = 0; x < snippetColumnOne.length-2;){
+                                        var snippetOne = snippetColumnOne[x].childNodes[1].childNodes[3];
+                                        var snippetTwo = snippetColumnTwo[x].childNodes[1].childNodes[3];
+                                        snippetOne.innerHTML = whatElseWords[y];
+                                        y++;
+                                        snippetTwo.innerHTML = whatElseWords[y];
+                                        y++;
+                                        x = x + 2;
+                                        if(y == snippetsWords.length)
+                                            y = 0;
+                                        window.clearInterval(whatElseLoad);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                var whatElseLoad = window.setInterval(dropDownListen, 100);
+                var snippetsLoad = window.setInterval(snippetsListen, 100);
                 var commentsLoad = window.setInterval(commentsListen, 100);
                 window.clearInterval(commentsPageLoaded);
             }
