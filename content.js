@@ -1,8 +1,9 @@
 // *************************************************************************************
 //
 // @author - Arrash
-// @date - 11/19/2015
-// @version - 1.1.1
+// @last_modified - 11/22/2015
+// @date - 11/22/2015
+// @version - 1.2.0
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
