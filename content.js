@@ -174,7 +174,9 @@ window.onload = function(){
                         }
                     }
                 }
+                // This updates the snippets so that they have realistic comments for the keywords. 
                 var snippetsListen = function(){
+                    // make sure that the snippets show up before updating them
                     if(typeof document.getElementsByClassName("snippets")[0] != "undefined"){
                         var snippetSection = document.getElementsByClassName("snippets")[0].childNodes[3];
                         var snippetColumnOne = snippetSection.childNodes[2].childNodes;
@@ -196,14 +198,18 @@ window.onload = function(){
                         }
                     }
                 }
+                // This updates the snippets after 'What else?' is chosen. It functions in the same way as the snippet listener works.
                 var dropDownListen = function(){
+                    // make sure that the drop down is defined before progressing
                     if(typeof document.getElementsByClassName("trigger")[5] != "undefined"){
                         var content = document.getElementsByClassName('trigger')[5].childNodes[4].innerHTML;
+                        // check to see if it equals "What else?"
                         if(content == "What else?"){
                             var snippetSection = document.getElementsByClassName("snippets")[0].childNodes[3];
                             var snippetColumnOne = snippetSection.childNodes[2].childNodes;
                             var snippetColumnTwo = snippetSection.childNodes[4].childNodes;
                             var snippetTest = snippetColumnOne[snippetColumnOne.length-3].childNodes[1].childNodes[3].innerHTML;
+                            // if it is what else lets make sure that the snippets have updated so we can adjust them
                             if(lunchSnippet.test(snippetTest)){
                                 if(typeof snippetTest != "undefined"){
                                     for(var x = 2, y = 0; x < snippetColumnOne.length-2;){
