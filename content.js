@@ -3,7 +3,7 @@
 // @author - Arrash
 // @last_modified - 11/22/2015
 // @date - 11/22/2015
-// @version - 1.2.0
+// @version - 1.2.1
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
@@ -155,7 +155,7 @@ window.onload = function(){
                             // we need to make sure all of the comments for available career pathing loaded
                             if(typeof commentsList != "undefined"){
                                 var commentsListArray = commentsList.childNodes;
-                                if(typeof commentsListArray[200].childNodes[3].innerHTML != "undefined"){
+                                if(typeof commentsListArray[commentsListArray.length-5].childNodes[3].innerHTML != "undefined"){
                                     // a double check to make sure that the actual comment text has available career pathing and is loaded
                                     var commentTextCheck = commentsList.childNodes[6].childNodes[3].innerHTML;
                                     if(commentKeyword.test(commentTextCheck)){
