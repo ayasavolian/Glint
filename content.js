@@ -1,9 +1,9 @@
 // *************************************************************************************
 //
 // @author - Arrash
-// @last_modified - 11/22/2015
-// @date - 11/22/2015
-// @version - 1.2.1
+// @last_modified - 11/23/2015
+// @date - 11/23/2015
+// @version - 1.2.2
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
@@ -190,6 +190,8 @@ window.onload = function(){
                                 var snippetTwo = snippetColumnTwo[x].childNodes[1].childNodes[3];
                                 snippetOne.innerHTML = snippetsWords[y];
                                 y++;
+                                if(y == snippetsWords.length)
+                                    y = 0;
                                 snippetTwo.innerHTML = snippetsWords[y];
                                 y++;
                                 x = x + 2;
@@ -214,15 +216,17 @@ window.onload = function(){
                             // if it is what else lets make sure that the snippets have updated so we can adjust them
                             if(lunchSnippet.test(snippetTest)){
                                 if(typeof snippetTest != "undefined"){
-                                    for(var x = 2, y = 0; x < snippetColumnOne.length-2;){
+                                    for(var x = 2, y = 0; x < snippetColumnOne.length;){
                                         var snippetOne = snippetColumnOne[x].childNodes[1].childNodes[3];
                                         var snippetTwo = snippetColumnTwo[x].childNodes[1].childNodes[3];
                                         snippetOne.innerHTML = whatElseWords[y];
                                         y++;
+                                        if(y == whatElseWords.length)
+                                            y = 0;
                                         snippetTwo.innerHTML = whatElseWords[y];
                                         y++;
                                         x = x + 2;
-                                        if(y == snippetsWords.length)
+                                        if(y == whatElseWords.length)
                                             y = 0;
                                         window.clearInterval(whatElseLoad);
                                     }
