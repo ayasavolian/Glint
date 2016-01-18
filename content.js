@@ -362,9 +362,11 @@ window.onload = function(){
                 var dropDownListen = function(){
                     // make sure that the drop down is defined before progressing
                     if(typeof document.getElementsByClassName("trigger")[5] != "undefined"){
-                        var content = document.getElementsByClassName('trigger')[5].childNodes[4].innerHTML;
+                        var content = document.getElementsByClassName('trigger')[5].childNodes[4].childNodes[2].innerHTML;
                         // check to see if it equals "What else?"
+                        console.log("Comments > Drop Down Defined", content);
                         if(content == "What else?"){
+                            console.log("Comments > Drop Down > What Else?");
                             var snippetSection = document.getElementsByClassName("snippets")[0].childNodes[3];
                             var snippetColumnOne = snippetSection.childNodes[2].childNodes;
                             var snippetColumnTwo = snippetSection.childNodes[4].childNodes;
