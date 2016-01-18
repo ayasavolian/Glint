@@ -270,15 +270,17 @@ window.onload = function(){
                     var dep = JSON.parse(localStorage.getItem("departments"));
                     if(dep != null){
                         if(typeof(dep[7]) != "undefined"){
-                            if(typeof(document.getElementsByClassName('eSat')[0]) != "undefined"){
-                                if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1]) != "undefined"){
-                                    if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1]) != "undefined"){
-                                        if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1].childNodes[1]) != "undefined"){
-                                            console.log("In Dashboard > eSat Name Loading...");
-                                            document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1].childNodes[1].innerHTML = dep[7];
-                                            console.log("eSat Name Loaded");
-                                            window.clearInterval(eSatLoad);   
-                                        }                                     
+                            if(dep[7] != ""){
+                                if(typeof(document.getElementsByClassName('eSat')[0]) != "undefined"){
+                                    if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1]) != "undefined"){
+                                        if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1]) != "undefined"){
+                                            if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1].childNodes[1]) != "undefined"){
+                                                console.log("In Dashboard > eSat Name Loading...");
+                                                document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1].childNodes[1].innerHTML = dep[7];
+                                                console.log("eSat Name Loaded");
+                                                window.clearInterval(eSatLoad);   
+                                            }                                     
+                                        }
                                     }
                                 }
                             }
