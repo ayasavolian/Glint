@@ -318,14 +318,14 @@ window.onload = function(){
                                     if(commentKeyword.test(commentTextCheck)){
                                         console.log("Career Pathing Comment > Loaded");
                                         // loop through all of the comments and give them one of the comments from the careerPathingWords array defined
-                                        for(var x = 2, y = 0; x < commentsListArray.length;){
+                                        for(var x = 2, y = 0; x < commentsListArray.length - 4;){
                                             var commentText = commentsListArray[x].childNodes[3].childNodes[1];
                                             commentText.innerHTML = careerPathingWords[y];
                                             x = x + 2;
                                             y++;
                                             if(y == careerPathingWords.length)
                                                 y = 0;
-                                            window.clearInterval(commentsPageLoaded);
+                                            window.clearInterval(commentsLoad);
                                         }
                                     }
                                 }
@@ -400,23 +400,57 @@ window.onload = function(){
                         if(typeof(document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes) != "undefined"){
                             console.log("Word Cloud Words > Defined...");
                             var wordCloudLength = document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes.length - 2;
-                            console.log(wordCloudLength);
-                            for(var x = 2; x <= wordCloudLength;){
-                                console.log(document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x]);
-                                var randomNum = Math.floor(Math.random() * (3 - 0));
-                                document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x].style.color = wordCloudColors[randomNum];
-                                if(x == 4){
-                                    document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x].style.color = wordCloudColors[2];
+                            var greyColorLength = 0;
+                            for(var greyCount = 2; greyCount <= wordCloudLength; greyCount = greyCount + 2){
+                                if(document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[greyCount].style.color == "")
+                                    greyColorLength++;
+                            }
+                            if(greyColorLength == wordCloudLength / 2 || greyColorLength == (wordCloudLength-1)/2){
+                                for(var x = 2; x <= wordCloudLength;){
+                                    var randomNum = Math.floor(Math.random() * (3 - 0));
+                                    document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x].style.color = wordCloudColors[randomNum];
+                                    if(x == 4){
+                                        document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x].style.color = wordCloudColors[2];
+                                    }
+                                    x = x + 2;
                                 }
-                                console.log(x);
-                                x = x + 2;
+                            }
+                            else{
+                                console.log("Word Cloud > Already Colored");
                             }
                             console.log("Word Cloud > Colored");
-                            window.clearInterval(wordCloudLoad);
+                            // window.clearInterval(wordCloudLoad);
+                        }
+                    }
+                    else if(typeof(document.getElementsByClassName("wordCloud")[0]) != "undefined" && typeof(document.getElementsByClassName("wordCloud")[1]) == "undefined"){
+                        console.log("Question Chosen > Word Cloud > Defined");
+                        if(typeof(document.getElementsByClassName('wordCloud')[0].childNodes[1].childNodes) != "undefined"){
+                            console.log("Question Chosen > Word Cloud Words > Defined...");
+                            var wordCloudLength = document.getElementsByClassName('wordCloud')[0].childNodes[1].childNodes.length - 2;
+                            var greyColorLength = 0;
+                            for(var greyCount = 2; greyCount <= wordCloudLength; greyCount = greyCount + 2){
+                                if(document.getElementsByClassName('wordCloud')[0].childNodes[1].childNodes[greyCount].style.color == "")
+                                    greyColorLength++;
+                            }
+                            if(greyColorLength == wordCloudLength / 2 || greyColorLength == (wordCloudLength-1)/2){
+                                for(var x = 2; x <= wordCloudLength;){
+                                    var randomNum = Math.floor(Math.random() * (3 - 0));
+                                    document.getElementsByClassName('wordCloud')[0].childNodes[1].childNodes[x].style.color = wordCloudColors[randomNum];
+                                    if(x == 4){
+                                        document.getElementsByClassName('wordCloud')[0].childNodes[1].childNodes[x].style.color = wordCloudColors[2];
+                                    }
+                                    x = x + 2;
+                                }
+                            }
+                            else{
+                                console.log("Question Chosen > Word Cloud > Already Colored...");
+                            }
+                            console.log("Question Chosen > Word Cloud > Colored");
+                            // window.clearInterval(wordCloudLoad);
                         }
                     }
                 }
-                var wordCloudLoad = window.setInterval(wordCloudListen, 100);
+                var wordCloudLoad = window.setInterval(wordCloudListen, 500);
                 var whatElseLoad = window.setInterval(dropDownListen, 100);
                 var snippetsLoad = window.setInterval(snippetsListen, 100);
                 var commentsLoad = window.setInterval(commentsListen, 100);
