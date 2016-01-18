@@ -9,7 +9,7 @@
             font-size: 100%;
             margin: 0px;
             width: 300px;
-            height: 450px;
+            height: 650px;
         }
         a {
             text-decoration: none;
@@ -38,6 +38,14 @@
             padding: 0px 25px;
             margin-top: -50px;
         }
+        .change-option-container{
+            color: #33adda;
+            font-size: 12px;
+            font-weight: 200;
+            width: 250px;
+            padding: 30px 0px 0px 35px;
+            display: inline-block;
+        }
         .submittedForm{
             color: #33adda;
             font-size: 12px;
@@ -55,6 +63,7 @@
             border: 1px solid #33adda;
             font-size: 14px;
             padding-left: 5px;
+            font-weight: 400;
         }
         .form-container{
             padding-left: 10px;
@@ -76,7 +85,18 @@
             color: #fff;
             cursor: pointer;
         }
-        #submitted, #cleared{
+        .submit-department{
+            width: 233px;
+            height: 24px;
+            text-align: center;
+            padding-top: 10px;
+            border-radius: 5px;
+            background-color: #33adda;
+            font-size: 10px;
+            color: #fff;
+            cursor: pointer;
+        }
+        #submitted, #cleared, #department-submitted, #department-cleared{
             display: none;
         }
         input[type="text"], input[type="password"], textarea, select { 
@@ -98,38 +118,124 @@
             margin-top: 15px;
             cursor: pointer;          
         }
+        #edit-company, #edit-dashboard-departments-container{
+            display: none;
+        }
+        #edit-dashboard-departments-container{
+            margin-top: 100px;
+        }
+        #edit-dashboard-result{
+            /*margin-top: 100px;*/
+        }
+        #edit-company, #edit-dashboard{
+            cursor: pointer;
+        }
+        .extra-padding{
+            margin: 5px 10px 5px 20px;
+        }
+        .department-submit-container{
+
+        }
+        .sub-title{
+            margin-top: 15px;
+            padding: 0px 30px;
+            color: #33adda; 
+            font-size: 12px;
+        }
     </style>
     <script src="popup.js"></script>
 </head>
 <body id="msi-body">
-    <div class = "glint-header">
-        <img id = "logo" src = "">
-    </div>
-    <div class = "title">
-        Insert the name of the company you're demoing to below
-    </div>
-    <div class = "company-container">
-        <div class = "form-container">
-            <input id = "input" class = "company-field" type="text" name="name">
+    <div id = "choose-survey-company-container">
+        <div class = "glint-header">
+            <img id = "logo" src = "">
         </div>
-        <div class = "submit-container">
-            <div id = "submit-button" class = "submit">
+        <div class = "title">
+            Insert the name of the company you're demoing to below
+        </div>
+        <div class = "company-container">
+            <div class = "form-container">
+                <input id = "input" class = "company-field" type="text" name="name">
+            </div>
+            <div class = "submit-container">
+                <div id = "submit-button" class = "submit">
+                    Submit
+                </div>
+            </div>
+        </div>
+        <div class = "clear-container">
+            <div id = "clear-button" class = "clear">
+                Clear Company
+            </div>
+        </div>
+        <div id = "submitted" class = "submittedForm">
+            The company name has been submitted and will replace "Thrive Inc" in the survey. <br>
+            NOTE: make sure to refresh twice <b> and check </b> to see if the name of the company is there.
+        </div>
+        <div id = "cleared" class = "submittedForm">
+            The company name has been changed back to "Thrive Inc".
+        </div>
+    </div>
+    <div id = "edit-dashboard-departments-container">
+        <div class = "title">
+            These will replace the name of the departments/eSat name that show up in the dashboard page.
+            NOTE: You dont have to fill them all in. <br><br>
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "first-dep" class = "company-field" type="text" name="first-dep" placeholder = "Engineering">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "second-dep" class = "company-field" type="text" name="second-dep" placeholder = "Sales">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "third-dep" class = "company-field" type="text" name="third-dep" placeholder = "Service">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "fourth-dep" class = "company-field" type="text" name="fourth-dep" placeholder = "Product Management">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "fifth-dep" class = "company-field" type="text" name="fifth-dep" placeholder = "G&A">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "sixth-dep" class = "company-field" type="text" name="sixth-dep" placeholder = "Marketing">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "seventh-dep" class = "company-field" type="text" name="seventh-dep" placeholder = "Research">
+        </div>
+        <div class = "sub-title">
+            This will change the name of the eSat on the Dashboard page
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "esat" class = "company-field" type="text" name="esat" placeholder = "eSat Name">
+        </div>
+        <div class = "form-container extra-padding">
+            <div id = "department-button" class = "submit-department">
                 Submit
             </div>
         </div>
-    </div>
-    <div class = "clear-container">
-        <div id = "clear-button" class = "clear">
-            Clear Company
+        <div class = "form-container extra-padding">
+            <div id = "department-clear-button" class = "submit-department">
+                Clear Settings
+            </div>
         </div>
     </div>
-    <div id = "submitted" class = "submittedForm">
-        The company name has been submitted and will replace "Thrive Inc" in the survey. <br>
-        NOTE: make sure to refresh twice <b> and check </b> to see if the name of the company is there.
+    <div id = "edit-dashboard-result">
+        <div id = "department-submitted" class = "submittedForm">
+            The department/esat names have been submitted. Here are the names that will appear:
+            <div id = "department-submit-result">
+            </div>
+        </div>
+        <div id = "department-cleared" class = "submittedForm">
+            The department/esat names will go back to their original names.
+        </div>
     </div>
-    <div id = "cleared" class = "submittedForm">
-        The company name has been changed back to "Thrive Inc".
+    <div class = "change-option-container">
+        <div id = "edit-dashboard">
+            Edit Dashboard Settings >
+        </div>
+        <div id = "edit-company">
+            Edit Demo Company Name >
+        </div>
     </div>
-
 </body>
 </html>

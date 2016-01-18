@@ -1,9 +1,9 @@
 // *************************************************************************************
 //
 // @author - Arrash
-// @last_modified - 11/23/2015
-// @date - 11/23/2015
-// @version - 1.2.2
+// @last_modified - 1/18/2016
+// @date - 1/18/2016
+// @version - 1.3.0
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
@@ -61,6 +61,16 @@ var inSurvey = new RegExp('app.glintinc.com/thrive@demo2#/questionnaire/preview'
         "I love our new awesome perks! We really have made big strides in having more amenities available, especially with snacks. Our senior management team's decision to include nap pods was also a great addition.",
         "We have been improving in so many areas, but the one area I think we can still improve on is our available career pathing. I feel like my manager hasn't done a great job of improving.",
         ];
+        wordCloudColors = ["#33adda", "#74787f", "#ed5f63"];
+        var teamDash = {
+            "Product Management:&nbsp;" : 3,
+            "Marketing:&nbsp;" : 5,
+            "G&amp;A:&nbsp;" : 4, 
+            "Engineering:&nbsp;" : 0,
+            "Sales:&nbsp;" : 1,
+            "Service:&nbsp;" : 2,
+            "Research:&nbsp;" : 6
+        }
 
 window.onload = function(){
     console.log("Page > Loaded");
@@ -123,7 +133,7 @@ window.onload = function(){
                 console.log("Thank You > Loaded");
                 var companyName = localStorage.getItem('company'),
                     thankYou = document.getElementsByClassName("thanks")[0];
-                if(typeof thankYou.childNodes[3] != "undefined" && thankYou.childNodes[3].innerHTML != "" && companyName != null){
+                if(typeof(thankYou.childNodes[3]) != "undefined" && thankYou.childNodes[3].innerHTML != "" && companyName != null){
                     var thankYouReplace = thankYou.childNodes[3].innerHTML;
                     thankYouReplace = thankYouReplace.replace(/Thrive Inc/, companyName);
                     thankYou.childNodes[3].innerHTML = thankYouReplace;
@@ -133,29 +143,176 @@ window.onload = function(){
         }
         var pageChange = window.setInterval(changePage, 100);
     }
-    // this is to check if they're on the comments page
+// *******************************************************************************************************************************************************************
+
+    // this is to check if they're on the comments page or if theyre in the dashboard page
+
+    // if in dashboard page:
+
+    // we're going to listen to see if they inputted custom settings for the team names and for the esat name. 
+    // we're then going to change the team names in the top bar and also in the team section under driver.
+
+    // if in comments page:
+
     // we're then going to do a check to see if theyre on the 'available career pathing' option in the cloudwords. 
     // once we figure that out we need to make sure all of the comments have fully loaded 
     // we need this to run when the app is loaded or when the page is reloaded on the results tab so we need to check if theyre on the home page
+
+// *******************************************************************************************************************************************************************
+
     if(dashboard.test(window.location.href) || results.test(window.location.href) || surveyTab.test(window.location.href)){
-        console.log("App or Results Page > Loaded");
+        console.log("Dashboard or Results Page > Loaded");
+        // check to see if theyre on the dashboard page.
+        var dashboardPage = function() {
+            if(dashboard.test(window.location.href)){
+                chrome.runtime.sendMessage({greeting: "departments"}, function(response) {
+                    // We then store the dashboard settings in localstorage so we can use it for all the other functions
+                    if(response.departments != null){
+                        localStorage.setItem("departments", response.departments);
+                    }
+                    else{
+                        localStorage.removeItem("departments");
+                    }
+                });
+                console.log("Dashboard Page > Loaded");
+                // *************************************************************************************
+                // 
+                //this is to update the departments dashboard under Driver
+                // we are simply going through the node tree and updating the inside. The one thing here
+                // is that we are mapping between the top dashboard and the team dashboard using an array "teamDash"
+                // above. We take the value of the innerHTML and map it to the position of the top bar's values.
+                // We do this because the top bar's values map to the values passed from the plugin. We also update the
+                // line graph's title based on the 4th departments name provided. This replaces Product Management
+                //
+                // *************************************************************************************
+                var departmentsDashboardListen = function(){
+                    var dep = JSON.parse(localStorage.getItem("departments"));
+                    if(dep != null){
+                        if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1]) != "undefined"){
+                            console.log("In Dashboard > Team Dashboard Loading...");
+                            if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[0]) != "undefined"){
+                                if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1]) != "undefined"){
+                                    if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1].childNodes[1]) != "undefined"){
+                                        if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[4].childNodes[1].childNodes[1].childNodes[0])  != "undefined"){
+                                            for(var z = 2; z < document.getElementsByClassName('aggregatesCollapsed')[1].childNodes.length-2;){
+                                                var dashInnerVal = document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML;
+                                                if(typeof(teamDash[dashInnerVal]) != "undefined"){
+                                                    if(dep[teamDash[dashInnerVal]] != ""){
+                                                        document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ":" + '&nbsp;';   
+                                                        if(dashInnerVal == "Product Management:&nbsp;"){
+                                                            var tempLine = document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML.split(':');
+                                                            document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ": " + tempLine[1];
+                                                        }
+                                                    }
+                                                }
+                                                z = z + 2;
+                                            }
+                                            console.log("Team Dashboard Loaded");
+                                            window.clearInterval(departmentsDashboardLoad);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        window.clearInterval(departmentsDashboardLoad);
+                    }
+                }
+                // *************************************************************************************
+                // 
+                // this is to listen to see when the top bar is loaded. This one we change some of the CSS for the positioning. Tricky part here
+                // is knowing when to split the length of the department from the plugin. We do it on the 13th character when taking out the "<div>"
+                // This makes it so that the length doesnt get too long. We split based on spaces and then add in divs between the sentence breaks.
+                // Lastly, we remove the "<br>" which is placed after using removeChild in the 2nd childNode. 
+                //
+                // *************************************************************************************
+                var departmentsTopListen = function(){
+                    var dep = JSON.parse(localStorage.getItem("departments"));
+                    if(dep != null){
+                        for(var x = 0; x < dep.length; x++){
+                            if(dep[x] != ""){
+                                if(typeof(document.getElementsByClassName('highcharts-subtitle')[x]) != "undefined"){
+                                    document.getElementsByClassName('highcharts-subtitle')[x].setAttribute("style", "position: absolute; white-space: nowrap; font-family: 'Graphik Override', 'Graphik Web', 'Graphik Web', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; color: rgb(86, 86, 86); text-align: center; margin-left: 0px; margin-top: 0px; left: 50px; top: 159px; width: 105px;");
+                                    var departmentInnerHTML = "<div>";
+                                    var testString = "<div>";
+                                    if(dep[x].length > 13){
+                                        var temp_dep = dep[x].split(' ');
+                                        for(var y = 0; y < temp_dep.length; y++){
+                                            testString += temp_dep[y];
+                                            if(testString.length > 17){
+                                                departmentInnerHTML += "</div><div>" + temp_dep[y];
+                                            }
+                                            else{
+                                                departmentInnerHTML += ' ' + temp_dep[y];
+                                            }
+                                        }
+                                    }
+                                    else{
+                                        departmentInnerHTML += ' ' + dep[x];
+                                    }
+                                    departmentInnerHTML += "</div>";
+                                    var chart = document.getElementsByClassName('highcharts-subtitle')[x];
+                                    chart.removeChild(chart.childNodes[1])
+                                    document.getElementsByClassName('highcharts-subtitle')[x].childNodes[0].innerHTML = departmentInnerHTML;
+                                    console.log("Top Bar Updated");
+                                    window.clearInterval(departmentsTopLoad);
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        window.clearInterval(departmentsTopLoad);
+                    }
+                }
+                // This is to update the eSat Name based on the value provided if there is a value. 
+                var eSatListen = function(){
+                    var dep = JSON.parse(localStorage.getItem("departments"));
+                    if(dep != null){
+                        if(typeof(dep[7]) != "undefined"){
+                            if(typeof(document.getElementsByClassName('eSat')[0]) != "undefined"){
+                                if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1]) != "undefined"){
+                                    if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1]) != "undefined"){
+                                        if(typeof(document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1].childNodes[1]) != "undefined"){
+                                            console.log("In Dashboard > eSat Name Loading...");
+                                            document.getElementsByClassName('eSat')[0].childNodes[1].childNodes[1].childNodes[1].innerHTML = dep[7];
+                                            console.log("eSat Name Loaded");
+                                            window.clearInterval(eSatLoad);   
+                                        }                                     
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        window.clearInterval(eSatLoad);
+                    }
+                }
+                var eSatLoad = window.setInterval(eSatListen, 100);
+                var departmentsDashboardLoad = window.setInterval(departmentsDashboardListen, 100);
+                var departmentsTopLoad = window.setInterval(departmentsTopListen, 100);
+                window.clearInterval(dashboardPageLoaded);
+            }
+        }
         // We then need to check if theyre on the comments page afterward using an interval. 
         // If we don't then we'll never know if they visit the page without them refreshing
         var commentsPage = function() {
             if(comments.test(window.location.href)){
                 console.log("Comments Page > Loaded");
+                // if the comment page exists then we need to listen for the values. We then use the careerPathingWords
+                // in order to update the comments for Available Career Path. 
                 var commentsListen = function() {
                     // checking to see if the keyword is defined on the comments page. The reason is because the comments bar
                     // only shows when youre looking at a specific keyword. 
-                    if(typeof document.getElementsByClassName("keyword")[0] != "undefined"){
+                    if(typeof(document.getElementsByClassName("keyword")[0]) != "undefined"){
                         // we need to make sure they selected available career pathing
                         if(commentKeyword.test(document.getElementsByClassName("keyword")[0].innerHTML)){
                             console.log("Career Pathing > Loading...");
                             var commentsList = document.getElementsByClassName('commentsList')[0].childNodes[5];
                             // we need to make sure all of the comments for available career pathing loaded
-                            if(typeof commentsList != "undefined"){
+                            if(typeof(commentsList) != "undefined"){
                                 var commentsListArray = commentsList.childNodes;
-                                if(typeof commentsListArray[commentsListArray.length-5].childNodes[3].innerHTML != "undefined"){
+                                if(typeof(commentsListArray[commentsListArray.length-5].childNodes[3].innerHTML) != "undefined"){
                                     // a double check to make sure that the actual comment text has available career pathing and is loaded
                                     var commentTextCheck = commentsList.childNodes[6].childNodes[3].innerHTML;
                                     if(commentKeyword.test(commentTextCheck)){
@@ -168,7 +325,7 @@ window.onload = function(){
                                             y++;
                                             if(y == careerPathingWords.length)
                                                 y = 0;
-                                            window.clearInterval(commentsLoad);
+                                            window.clearInterval(commentsPageLoaded);
                                         }
                                     }
                                 }
@@ -183,8 +340,7 @@ window.onload = function(){
                         var snippetSection = document.getElementsByClassName("snippets")[0].childNodes[3];
                         var snippetColumnOne = snippetSection.childNodes[2].childNodes;
                         var snippetColumnTwo = snippetSection.childNodes[4].childNodes;
-                        var snippetTest = snippetColumnOne[snippetColumnOne.length-3].childNodes[1].childNodes[3];
-                        if(typeof snippetTest != "undefined"){
+                        if(typeof(snippetColumnOne[snippetColumnOne.length-3].childNodes[1].childNodes[3]) != "undefined"){
                             for(var x = 2, y = 0; x < snippetColumnOne.length;){
                                 var snippetOne = snippetColumnOne[x].childNodes[1].childNodes[3];
                                 var snippetTwo = snippetColumnTwo[x].childNodes[1].childNodes[3];
@@ -215,7 +371,7 @@ window.onload = function(){
                             var snippetTest = snippetColumnOne[snippetColumnOne.length-3].childNodes[1].childNodes[3].innerHTML;
                             // if it is what else lets make sure that the snippets have updated so we can adjust them
                             if(lunchSnippet.test(snippetTest)){
-                                if(typeof snippetTest != "undefined"){
+                                if(typeof(snippetTest) != "undefined"){
                                     for(var x = 2, y = 0; x < snippetColumnOne.length;){
                                         var snippetOne = snippetColumnOne[x].childNodes[1].childNodes[3];
                                         var snippetTwo = snippetColumnTwo[x].childNodes[1].childNodes[3];
@@ -235,6 +391,32 @@ window.onload = function(){
                         }
                     }
                 }
+                // this updates the colors for the word cloud. We then choose between three color sets, blue, red and grey 
+                // and assign randomly. The only one we don't assign randomly is Available Career Pathing which is red. 
+                var wordCloudListen = function(){
+                    // make sure the word cloud exists
+                    if(typeof(document.getElementsByClassName("wordCloud")[1]) != "undefined"){
+                        console.log("Word Cloud > Defined");
+                        if(typeof(document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes) != "undefined"){
+                            console.log("Word Cloud Words > Defined...");
+                            var wordCloudLength = document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes.length - 2;
+                            console.log(wordCloudLength);
+                            for(var x = 2; x <= wordCloudLength;){
+                                console.log(document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x]);
+                                var randomNum = Math.floor(Math.random() * (3 - 0));
+                                document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x].style.color = wordCloudColors[randomNum];
+                                if(x == 4){
+                                    document.getElementsByClassName('wordCloud')[1].childNodes[1].childNodes[x].style.color = wordCloudColors[2];
+                                }
+                                console.log(x);
+                                x = x + 2;
+                            }
+                            console.log("Word Cloud > Colored");
+                            window.clearInterval(wordCloudLoad);
+                        }
+                    }
+                }
+                var wordCloudLoad = window.setInterval(wordCloudListen, 100);
                 var whatElseLoad = window.setInterval(dropDownListen, 100);
                 var snippetsLoad = window.setInterval(snippetsListen, 100);
                 var commentsLoad = window.setInterval(commentsListen, 100);
@@ -242,5 +424,6 @@ window.onload = function(){
             }
         }
         var commentsPageLoaded = window.setInterval(commentsPage, 100);
+        var dashboardPageLoaded = window.setInterval(dashboardPage, 100);
     }
 }

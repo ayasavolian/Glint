@@ -1,14 +1,37 @@
 // *************************************************************************************
 //
 // @author - Arrash
-// @last_modified - 11/17/2015
-// @date - 11/23/2015
-// @version - 1.2.2
+// @last_modified - 1/18/2016
+// @date - 1/18/2016
+// @version - 1.3.0
 // @purpose - The purpose is to be the background page for chrome extension and store values
 // from the popup and to communicate with content
 //
 // *************************************************************************************
 
+
+// *************************************************************************************
+//
+// this is a function that will take the departments that are typed in from the Chrome Plugin
+// and store it in localStorage to be used later
+//
+// *************************************************************************************
+
+var setDepartmentNames = function(departments){
+	var dep = JSON.stringify(departments)
+	localStorage.setItem("departments", dep);
+	console.log(localStorage.getItem("departments"));
+}
+
+// *************************************************************************************
+//
+// This function will clear the department names from background's storage
+//
+// *************************************************************************************
+
+var clearDepartmentNames = function(){
+	localStorage.removeItem("departments");
+}
 
 // *************************************************************************************
 //
@@ -18,8 +41,8 @@
 // *************************************************************************************
 
 var setCompanyName = function(company){
-  localStorage.setItem("company", company);
-  console.log(company);
+	localStorage.setItem("company", company);
+	console.log(company);
 }
 
 // *************************************************************************************
@@ -29,7 +52,7 @@ var setCompanyName = function(company){
 // *************************************************************************************
 
 var clearCompanyName = function(company){
-  localStorage.clear();
+	localStorage.removeItem("company");
 }
 
 // *************************************************************************************
@@ -41,8 +64,12 @@ var clearCompanyName = function(company){
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.greeting == "company"){
+    if(request.greeting == "company"){
       var companyName = localStorage.getItem('company');
       sendResponse({company: companyName});
+    }
+    else if(request.greeting == "departments"){
+      var departmentNames = localStorage.getItem('departments');
+      sendResponse({departments: departmentNames});
     }
 });
