@@ -2,8 +2,8 @@
 //
 // @author - Arrash
 // @last_modified - 1/18/2016
-// @date - 1/18/2016
-// @version - 1.3.0
+// @date - 1/20/2016
+// @version - 1.3.1
 // @purpose - This is the JS related to the popup that will wait for the user to type
 // in the name of the company theyre demoing to and pass that info to a function in background.js
 //
