@@ -3,7 +3,7 @@
 // @author - Arrash
 // @last_modified - 1/18/2016
 // @date - 1/22/2016
-// @version - 1.3.4
+// @version - 1.3.6
 // @purpose - The purpose is to be the background page for chrome extension and store values
 // from the popup and to communicate with content
 //

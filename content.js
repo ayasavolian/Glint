@@ -3,7 +3,7 @@
 // @author - Arrash
 // @last_modified - 1/22/2016
 // @date - 1/22/2016
-// @version - 1.3.4
+// @version - 1.3.6
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
@@ -444,41 +444,6 @@ function glintHashHandler(load){
                                 }
                             }
                         }
-                        // This updates the snippets after 'What else?' is chosen. It functions in the same way as the snippet listener works.
-                        var dropDownListen = function(){
-                            // make sure that the drop down is defined before progressing
-                            if(typeof document.getElementsByClassName("trigger")[5] != "undefined"){
-                                var content = document.getElementsByClassName('trigger')[5].childNodes[4].childNodes[2].innerHTML;
-                                // check to see if it equals "What else?"
-                                console.log("Comments > Drop Down Defined", content);
-                                if(content == "What else?"){
-                                    console.log("Comments > Drop Down > What Else?");
-                                    var snippetSection = document.getElementsByClassName("snippets")[0].childNodes[3];
-                                    var snippetColumnOne = snippetSection.childNodes[2].childNodes;
-                                    var snippetColumnTwo = snippetSection.childNodes[4].childNodes;
-                                    var snippetTest = snippetColumnOne[snippetColumnOne.length-3].childNodes[1].childNodes[3].innerHTML;
-                                    // if it is what else lets make sure that the snippets have updated so we can adjust them
-                                    if(lunchSnippet.test(snippetTest)){
-                                        if(typeof(snippetTest) != "undefined"){
-                                            for(var x = 2, y = 0; x < snippetColumnOne.length;){
-                                                var snippetOne = snippetColumnOne[x].childNodes[1].childNodes[3];
-                                                var snippetTwo = snippetColumnTwo[x].childNodes[1].childNodes[3];
-                                                snippetOne.innerHTML = whatElseWords[y];
-                                                y++;
-                                                if(y == whatElseWords.length)
-                                                    y = 0;
-                                                snippetTwo.innerHTML = whatElseWords[y];
-                                                y++;
-                                                x = x + 2;
-                                                if(y == whatElseWords.length)
-                                                    y = 0;
-                                                window.clearInterval(whatElseLoad);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                         // this updates the colors for the word cloud. We then choose between three color sets, blue, red and grey 
                         // and assign randomly. The only one we don't assign randomly is Available Career Pathing which is red. 
                         var wordCloudListen = function(){
@@ -539,7 +504,6 @@ function glintHashHandler(load){
                             }
                         }
                         var wordCloudLoad = window.setInterval(wordCloudListen, 500);
-                        var whatElseLoad = window.setInterval(dropDownListen, 500);
                         var snippetsLoad = window.setInterval(snippetsListen, 500);
                         var commentsLoad = window.setInterval(commentsListen, 500);
                         window.clearInterval(commentsPageLoaded);
