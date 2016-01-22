@@ -1,14 +1,13 @@
 // *************************************************************************************
 //
 // @author - Arrash
-// @last_modified - 1/20/2016
-// @date - 1/20/2016
-// @version - 1.3.1
+// @last_modified - 1/22/2016
+// @date - 1/22/2016
+// @version - 1.3.2
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
 // *************************************************************************************
-
 
 console.log("Glint Plugin > Running");
 
@@ -23,13 +22,16 @@ console.log("Glint Plugin > Running");
 var inSurvey = new RegExp('#/questionnaire/preview'),
         thanks = new RegExp('#/questionnaire/done/preview'),
         survey = new RegExp('#/questionnaire/'),
+        reports = new RegExp('#/results/report'),
         results = new RegExp('results'),
         comments = new RegExp('comments'),
         commentKeyword = new RegExp('available career pathing'),
         welcome = new RegExp('Welcome to the Glint Pulse.'),
-        dashboard = new RegExp('dashboard'),
+        dashboard = new RegExp('#/dashboard'),
         surveyTab = new RegExp('surveys'),
         lunchSnippet = new RegExp('located next to Cal Train'),
+        heatMap = new RegExp('REPORT_TYPE_ENGAGEMENT_HEATMAP'),
+        executiveSummary = new RegExp('REPORT_TYPE_ENGAGEMENT_EXECUTIVE_SUMMARY'),
         careerPathingWords = [
             "<b>Available career pathing</b> is very limited in the sales organization.",
             "I am routinely told that <b> available career pathing </b> will be prioritized, but it never materializes.",
@@ -70,6 +72,15 @@ var inSurvey = new RegExp('#/questionnaire/preview'),
             "Sales:&nbsp;" : 1,
             "Service:&nbsp;" : 2,
             "Research:&nbsp;" : 6
+        }
+        var heatMapDash = {
+            "Product Management" : 3,
+            "Marketing" : 5,
+            "G&amp;A" : 4, 
+            "Engineering" : 0,
+            "Sales" : 1,
+            "Service" : 2,
+            "Research" : 6
         }
 
 function glintHashHandler(load){
@@ -170,7 +181,74 @@ function glintHashHandler(load){
             if(dashboard.test(window.location.hash) || results.test(window.location.hash) || surveyTab.test(window.location.hash)){
                 console.log("Dashboard or Results Page > Loaded");
                 // check to see if theyre on the dashboard page.
-                var dashboardPage = function() {
+                var reportsPage = function(){
+                    if(reports.test(window.location.hash)){
+                        console.log("Reports Tab > Loaded");
+                        chrome.runtime.sendMessage({greeting: "departments"}, function(response) {
+                            // We then store the dashboard settings in localstorage so we can use it for all the other functions
+                            if(response.departments != null){
+                                localStorage.setItem("departments", response.departments);
+                            }
+                            else{
+                                localStorage.removeItem("departments");
+                            }
+                        });
+                        var dep = JSON.parse(localStorage.getItem("departments"));
+                        var heatMapPage = function(){
+                            if(heatMap.test(window.location.hash) || executiveSummary.test(window.location.hash)){
+                                console.log("Reports Tab > Heat Map Loaded");
+                                if(typeof(document.getElementsByClassName('rowHeader')[17]) != "undefined"){
+                                    if(typeof(document.getElementsByClassName('rowHeader')[17].childNodes[0]) != "undefined"){
+                                        for(var x = 10; x < 18; x++){
+                                            var mapInnerVal = document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML;
+                                            if(typeof(heatMapDash[mapInnerVal]) != "undefined"){
+                                                if(dep[heatMapDash[mapInnerVal]] != ""){
+                                                    if(document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML == dep[heatMapDash[mapInnerVal]])
+                                                        break;
+                                                    else{
+                                                        document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML = dep[heatMapDash[mapInnerVal]];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        console.log("Reports Tab > Heat Map > Departments Loaded");
+                                        window.clearInterval(heatMapPageLoad);
+                                    }
+                                }
+                                if(executiveSummary.test(window.location.hash)){
+                                    if(typeof(document.getElementsByClassName('dataRows')[1]) != "undefined"){
+                                        if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6]) != "undefined"){
+                                            if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6].childNodes[0]) != "undefined"){
+                                                if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6].childNodes[0].childNodes[0]) != "undefined"){
+                                                    for(var x = 0; x < 7; x++){
+                                                        var summDashInnerVal = document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML;
+                                                        if(typeof(heatMapDash[summDashInnerVal]) != "undefined"){
+                                                            if(dep[heatMapDash[summDashInnerVal]] != ""){
+                                                                console.log(summDashInnerVal, dep[heatMapDash[summDashInnerVal]], document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML);
+                                                                if(document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML == dep[heatMapDash[summDashInnerVal]])
+                                                                    break;
+                                                                else{
+                                                                    document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML = dep[heatMapDash[summDashInnerVal]];
+                                                                }  
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else{
+                                window.clearInterval('heatMapPageLoad');
+                            }
+                        }
+                        var heatMapPageLoad = window.setInterval(heatMapPage, 500);
+                        window.clearInterval(reportsPageLoaded);
+                    }
+                }
+
+                var dashboardPage = function(){
                     if(dashboard.test(window.location.hash)){
                         chrome.runtime.sendMessage({greeting: "departments"}, function(response) {
                             // We then store the dashboard settings in localstorage so we can use it for all the other functions
@@ -181,6 +259,7 @@ function glintHashHandler(load){
                                 localStorage.removeItem("departments");
                             }
                         });
+                        var dep = JSON.parse(localStorage.getItem("departments"));
                         console.log("Dashboard Page > Loaded");
                         // *************************************************************************************
                         // 
@@ -193,29 +272,30 @@ function glintHashHandler(load){
                         //
                         // *************************************************************************************
                         var departmentsDashboardListen = function(){
-                            var dep = JSON.parse(localStorage.getItem("departments"));
-                            if(dep != null){
-                                if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1]) != "undefined"){
-                                    console.log("In Dashboard > Team Dashboard Loading...");
-                                    if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[0]) != "undefined"){
-                                        if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1]) != "undefined"){
-                                            if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1].childNodes[1]) != "undefined"){
-                                                if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[4].childNodes[1].childNodes[1].childNodes[0])  != "undefined"){
-                                                    for(var z = 2; z < document.getElementsByClassName('aggregatesCollapsed')[1].childNodes.length-2;){
-                                                        var dashInnerVal = document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML;
-                                                        if(typeof(teamDash[dashInnerVal]) != "undefined"){
-                                                            if(dep[teamDash[dashInnerVal]] != ""){
-                                                                document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ":" + '&nbsp;';   
-                                                                if(dashInnerVal == "Product Management:&nbsp;"){
-                                                                    var tempLine = document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML.split(':');
-                                                                    document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ": " + tempLine[1];
+                            if(dashboard.test(window.location.hash)){
+                                if(dep != null){
+                                    if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1]) != "undefined"){
+                                        console.log("In Dashboard > Team Dashboard Loading...");
+                                        if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[0]) != "undefined"){
+                                            if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1]) != "undefined"){
+                                                if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1].childNodes[1]) != "undefined"){
+                                                    if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[4].childNodes[1].childNodes[1].childNodes[0])  != "undefined"){
+                                                        for(var z = 2; z < document.getElementsByClassName('aggregatesCollapsed')[1].childNodes.length-2;){
+                                                            var dashInnerVal = document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML;
+                                                            if(typeof(teamDash[dashInnerVal]) != "undefined"){
+                                                                if(dep[teamDash[dashInnerVal]] != ""){
+                                                                    document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ":" + '&nbsp;';   
+                                                                    if(dashInnerVal == "Product Management:&nbsp;"){
+                                                                        var tempLine = document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML.split(':');
+                                                                        document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ": " + tempLine[1];
+                                                                    }
                                                                 }
                                                             }
+                                                            z = z + 2;
                                                         }
-                                                        z = z + 2;
+                                                        console.log("Team Dashboard Loaded");
+                                                        window.clearInterval(departmentsDashboardLoad);
                                                     }
-                                                    console.log("Team Dashboard Loaded");
-                                                    window.clearInterval(departmentsDashboardLoad);
                                                 }
                                             }
                                         }
@@ -235,7 +315,6 @@ function glintHashHandler(load){
                         //
                         // *************************************************************************************
                         var departmentsTopListen = function(){
-                            var dep = JSON.parse(localStorage.getItem("departments"));
                             if(dep != null){
                                 for(var x = 0; x < dep.length; x++){
                                     if(dep[x] != ""){
@@ -275,7 +354,6 @@ function glintHashHandler(load){
                         }
                         // This is to update the eSat Name based on the value provided if there is a value. 
                         var eSatListen = function(){
-                            var dep = JSON.parse(localStorage.getItem("departments"));
                             if(dep != null){
                                 if(typeof(dep[7]) != "undefined"){
                                     if(dep[7] != ""){
@@ -296,9 +374,9 @@ function glintHashHandler(load){
                                 window.clearInterval(eSatLoad);
                             }
                         }
-                        var eSatLoad = window.setInterval(eSatListen, 100);
-                        var departmentsDashboardLoad = window.setInterval(departmentsDashboardListen, 100);
-                        var departmentsTopLoad = window.setInterval(departmentsTopListen, 100);
+                        var eSatLoad = window.setInterval(eSatListen, 500);
+                        var departmentsDashboardLoad = window.setInterval(departmentsDashboardListen, 500);
+                        var departmentsTopLoad = window.setInterval(departmentsTopListen, 500);
                         window.clearInterval(dashboardPageLoaded);
                     }
                 }
@@ -462,19 +540,20 @@ function glintHashHandler(load){
                         }
                         var wordCloudLoad = window.setInterval(wordCloudListen, 500);
                         var whatElseLoad = window.setInterval(dropDownListen, 500);
-                        var snippetsLoad = window.setInterval(snippetsListen, 100);
-                        var commentsLoad = window.setInterval(commentsListen, 100);
+                        var snippetsLoad = window.setInterval(snippetsListen, 500);
+                        var commentsLoad = window.setInterval(commentsListen, 500);
                         window.clearInterval(commentsPageLoaded);
                     }
                 }
-                var commentsPageLoaded = window.setInterval(commentsPage, 100);
-                var dashboardPageLoaded = window.setInterval(dashboardPage, 100);
+                var reportsPageLoaded = window.setInterval(reportsPage, 500);
+                var commentsPageLoaded = window.setInterval(commentsPage, 500);
+                var dashboardPageLoaded = window.setInterval(dashboardPage, 500);
             }
 
             that.oldHash = window.location.hash;
         }
     };
-    this.Check = setInterval(function(){ detectPage() }, 100);
+    this.Check = setInterval(function(){ detectPage() }, 500);
 }
 
 var hashDetection = new glintHashHandler();

@@ -23,5 +23,5 @@
    "name": "Glint Demo",
    "permissions": ["notifications", "<all_urls>", "management", "storage", "webNavigation", "tabs", "cookies" ],
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.3.1"
+   "version": "1.3.2"
 }
