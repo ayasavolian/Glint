@@ -507,7 +507,7 @@ function glintHashHandler(load){
                                         console.log("Word Cloud > Already Colored");
                                     }
                                     console.log("Word Cloud > Colored");
-                                    // window.clearInterval(wordCloudLoad);
+                                    window.clearInterval(wordCloudLoad);
                                 }
                             }
                             else if(typeof(document.getElementsByClassName("wordCloud")[0]) != "undefined" && typeof(document.getElementsByClassName("wordCloud")[1]) == "undefined"){
