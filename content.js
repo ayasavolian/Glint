@@ -3,7 +3,7 @@
 // @author - Arrash
 // @last_modified - 1/22/2016
 // @date - 1/22/2016
-// @version - 1.3.6
+// @version - 1.3.7
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
@@ -195,41 +195,44 @@ function glintHashHandler(load){
                         });
                         var dep = JSON.parse(localStorage.getItem("departments"));
                         var heatMapPage = function(){
-                            if(heatMap.test(window.location.hash) || executiveSummary.test(window.location.hash)){
-                                console.log("Reports Tab > Heat Map Loaded");
-                                if(typeof(document.getElementsByClassName('rowHeader')[17]) != "undefined"){
-                                    if(typeof(document.getElementsByClassName('rowHeader')[17].childNodes[0]) != "undefined"){
-                                        for(var x = 10; x < 18; x++){
-                                            var mapInnerVal = document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML;
-                                            if(typeof(heatMapDash[mapInnerVal]) != "undefined"){
-                                                if(dep[heatMapDash[mapInnerVal]] != ""){
-                                                    if(document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML == dep[heatMapDash[mapInnerVal]])
-                                                        break;
-                                                    else{
-                                                        document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML = dep[heatMapDash[mapInnerVal]];
+                            if(dep != null){
+                                if(heatMap.test(window.location.hash) || executiveSummary.test(window.location.hash)){
+                                    console.log("Reports Tab > Heat Map Loaded");
+                                    if(typeof(document.getElementsByClassName('rowHeader')[17]) != "undefined"){
+                                        if(typeof(document.getElementsByClassName('rowHeader')[17].childNodes[0]) != "undefined"){
+                                            for(var x = 10; x < 18; x++){
+                                                var mapInnerVal = document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML;
+                                                if(typeof(heatMapDash[mapInnerVal]) != "undefined"){
+                                                    if(dep[heatMapDash[mapInnerVal]] != ""){
+                                                        if(document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML == dep[heatMapDash[mapInnerVal]])
+                                                            break;
+                                                        else{
+                                                            document.getElementsByClassName('rowHeader')[x].childNodes[0].innerHTML = dep[heatMapDash[mapInnerVal]];
+                                                        }
                                                     }
                                                 }
                                             }
+                                            console.log("Reports Tab > Heat Map > Departments Loaded");
+                                            window.clearInterval(heatMapPageLoad);
                                         }
-                                        console.log("Reports Tab > Heat Map > Departments Loaded");
-                                        window.clearInterval(heatMapPageLoad);
                                     }
-                                }
-                                if(executiveSummary.test(window.location.hash)){
-                                    if(typeof(document.getElementsByClassName('dataRows')[1]) != "undefined"){
-                                        if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6]) != "undefined"){
-                                            if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6].childNodes[0]) != "undefined"){
-                                                if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6].childNodes[0].childNodes[0]) != "undefined"){
-                                                    for(var x = 0; x < 7; x++){
-                                                        var summDashInnerVal = document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML;
-                                                        if(typeof(heatMapDash[summDashInnerVal]) != "undefined"){
-                                                            if(dep[heatMapDash[summDashInnerVal]] != ""){
-                                                                console.log(summDashInnerVal, dep[heatMapDash[summDashInnerVal]], document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML);
-                                                                if(document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML == dep[heatMapDash[summDashInnerVal]])
-                                                                    break;
-                                                                else{
-                                                                    document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML = dep[heatMapDash[summDashInnerVal]];
-                                                                }  
+                                    if(executiveSummary.test(window.location.hash)){
+                                        console.log("Reports Tab > Executive Summary Loaded");
+                                        if(typeof(document.getElementsByClassName('dataRows')[1]) != "undefined"){
+                                            if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6]) != "undefined"){
+                                                if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6].childNodes[0]) != "undefined"){
+                                                    if(typeof(document.getElementsByClassName('dataRows')[1].childNodes[6].childNodes[0].childNodes[0]) != "undefined"){
+                                                        for(var x = 0; x < 7; x++){
+                                                            var summDashInnerVal = document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML;
+                                                            if(typeof(heatMapDash[summDashInnerVal]) != "undefined"){
+                                                                if(dep[heatMapDash[summDashInnerVal]] != ""){
+                                                                    console.log(summDashInnerVal, dep[heatMapDash[summDashInnerVal]], document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML);
+                                                                    if(document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML == dep[heatMapDash[summDashInnerVal]])
+                                                                        break;
+                                                                    else{
+                                                                        document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML = dep[heatMapDash[summDashInnerVal]];
+                                                                    }  
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -243,7 +246,7 @@ function glintHashHandler(load){
                                 window.clearInterval(heatMapPageLoad);
                             }
                         }
-                        var heatMapPageLoad = window.setInterval(heatMapPage, 500);
+                        var heatMapPageLoad = window.setInterval(heatMapPage, 700);
                         window.clearInterval(reportsPageLoaded);
                     }
                 }
