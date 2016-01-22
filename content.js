@@ -3,7 +3,7 @@
 // @author - Arrash
 // @last_modified - 1/22/2016
 // @date - 1/22/2016
-// @version - 1.3.2
+// @version - 1.3.3
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
@@ -240,7 +240,7 @@ function glintHashHandler(load){
                                 }
                             }
                             else{
-                                window.clearInterval('heatMapPageLoad');
+                                window.clearInterval(heatMapPageLoad);
                             }
                         }
                         var heatMapPageLoad = window.setInterval(heatMapPage, 500);
