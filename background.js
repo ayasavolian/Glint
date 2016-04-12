@@ -1,14 +1,37 @@
 // *************************************************************************************
 //
 // @author - Arrash
-// @last_modified - 1/18/2016
-// @date - 1/22/2016
-// @version - 1.3.7
+// @last_modified - 2/28/2016
+// @date - 2/29/2016
+// @version - 1.4.1
 // @purpose - The purpose is to be the background page for chrome extension and store values
 // from the popup and to communicate with content
 //
 // *************************************************************************************
 
+
+// *************************************************************************************
+//
+// this is a function that will take the departments that are typed in from the Chrome Plugin
+// and store it in localStorage to be used later
+//
+// *************************************************************************************
+
+var setImpactNames = function(impacts){
+  var impact = JSON.stringify(impacts)
+  localStorage.setItem("impacts", impact);
+  console.log(localStorage.getItem("impacts"));
+}
+
+// *************************************************************************************
+//
+// This function will clear the department names from background's storage
+//
+// *************************************************************************************
+
+var clearImpactNames = function(){
+  localStorage.removeItem("impacts");
+}
 
 // *************************************************************************************
 //
@@ -71,5 +94,11 @@ chrome.runtime.onMessage.addListener(
     else if(request.greeting == "departments"){
       var departmentNames = localStorage.getItem('departments');
       sendResponse({departments: departmentNames});
+    }
+    else if(request.greeting == "impacts"){
+      var impactNames = localStorage.getItem('impacts');
+      sendResponse({impacts : impactNames});
+    }
+    else{
     }
 });

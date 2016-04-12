@@ -1,9 +1,9 @@
 // *************************************************************************************
 //
 // @author - Arrash
-// @last_modified - 1/22/2016
-// @date - 1/22/2016
-// @version - 1.3.7
+// @last_modified - 2/29/2016
+// @date - 2/29/2016
+// @version - 1.4.1
 // @purpose - The purpose is to be the content page for chrome extension and listens for
 // changes in the pages and changes the DOM of Glint.
 //
@@ -31,7 +31,13 @@ var inSurvey = new RegExp('#/questionnaire/preview'),
         surveyTab = new RegExp('surveys'),
         lunchSnippet = new RegExp('located next to Cal Train'),
         heatMap = new RegExp('REPORT_TYPE_ENGAGEMENT_HEATMAP'),
+        driverImpact = new RegExp('REPORT_TYPE_ENGAGEMENT_DRIVER_IMPACT'),
         executiveSummary = new RegExp('REPORT_TYPE_ENGAGEMENT_EXECUTIVE_SUMMARY'),
+        driverTeam = new RegExp('DRIVER_TEAM'),
+        driverTeamJapan = new RegExp('Japan'),
+        driverTeamAsia = new RegExp('Asia'),
+        responseRateReport = new RegExp('REPORT_TYPE_ENGAGEMENT_RATE'),
+        driverTeamCommentsPage = new RegExp('execSummary_commentCountChart'),
         careerPathingWords = [
             "<b>Available career pathing</b> is very limited in the sales organization.",
             "I am routinely told that <b> available career pathing </b> will be prioritized, but it never materializes.",
@@ -63,6 +69,51 @@ var inSurvey = new RegExp('#/questionnaire/preview'),
         "I love our new awesome perks! We really have made big strides in having more amenities available, especially with snacks. Our senior management team's decision to include nap pods was also a great addition.",
         "We have been improving in so many areas, but the one area I think we can still improve on is our available career pathing. I feel like my manager hasn't done a great job of improving.",
         ];
+        AlertsWords = [{
+            "sentiment" : "favorable",
+            "words" : "Best team I’ve been around in my career."
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "I like the company culture but my team does not seem to reflect those values."
+        },
+        {
+            "sentiment" : "favorable",
+            "words" : "My work team is very skilled, efficient and friendly. Could not ask for more."
+        },
+        {
+            "sentiment" : "neutral",
+            "words" : "Work team is good except for 1 person that doesn’t pull their weight, it drags the rest of us down!"
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "My manager’s negativity spoils the vibe on the whole team"
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "I think we need more team meetings that include remote employees, we don’t get to connect with them as much."
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "My manager’s negativity spoils the vibe on the whole team"
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "My team is way overworked and it effects morale. There is a lot of tension and pressure to get more done than we have time for. We need additional resources fast otherwise we are going to start losing people and make the problem even worse."
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "There are two people on the team that never get their work done on time - I have had enough!"
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "Incredibly talented team but not very open to helping each other out"
+        },
+        {
+            "sentiment" : "unfavorable",
+            "words" : "A social tool would really help collaboration with our cross-functional teams"
+        },
+        ];
         wordCloudColors = ["#33adda", "#74787f", "#ed5f63"];
         var teamDash = {
             "Product Management:&nbsp;" : 3,
@@ -82,6 +133,7 @@ var inSurvey = new RegExp('#/questionnaire/preview'),
             "Service" : 2,
             "Research" : 6
         }
+        var addedOutcomes = ["Customer Satisfaction", "Sales", "Operational Efficiency"] 
 
 function glintHashHandler(load){
     this.oldHash = window.location.hash;
@@ -183,7 +235,7 @@ function glintHashHandler(load){
                 // check to see if theyre on the dashboard page.
                 var reportsPage = function(){
                     if(reports.test(window.location.hash)){
-                        console.log("Reports Tab > Loaded");
+                        // console.log("Reports Tab > Loaded");
                         chrome.runtime.sendMessage({greeting: "departments"}, function(response) {
                             // We then store the dashboard settings in localstorage so we can use it for all the other functions
                             if(response.departments != null){
@@ -226,7 +278,6 @@ function glintHashHandler(load){
                                                             var summDashInnerVal = document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML;
                                                             if(typeof(heatMapDash[summDashInnerVal]) != "undefined"){
                                                                 if(dep[heatMapDash[summDashInnerVal]] != ""){
-                                                                    console.log(summDashInnerVal, dep[heatMapDash[summDashInnerVal]], document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML);
                                                                     if(document.getElementsByClassName('dataRows')[1].childNodes[x].childNodes[0].childNodes[0].innerHTML == dep[heatMapDash[summDashInnerVal]])
                                                                         break;
                                                                     else{
@@ -246,7 +297,62 @@ function glintHashHandler(load){
                                 window.clearInterval(heatMapPageLoad);
                             }
                         }
+                        var driverImpactPage = function(){
+                            if(driverImpact.test(window.location.hash)){
+                                // console.log("Driver Impact > Loaded");
+                                if(typeof(document.getElementsByClassName('menu')[6]) != "undefined"){
+                                    // console.log("Driver Impact Drop Down > Loaded");
+                                    if(document.getElementsByClassName('menu')[6].childNodes.length < (7 + addedOutcomes.length)){
+                                        chrome.runtime.sendMessage({greeting: "impacts"}, function(response) {
+                                        // We then store the dashboard settings in localstorage so we can use it for all the other functions
+                                            if(response.impacts != null){
+                                                localStorage.setItem("impacts", response.impacts);
+                                            }
+                                            else{
+                                                localStorage.removeItem("impacts");
+                                            }
+                                        });
+                                        var impact = JSON.parse(localStorage.getItem("impacts"));
+                                        if(impact != null){
+                                            addedOutcomes = impact;
+                                        }
+                                        var menu = document.getElementsByClassName('menu')[6];
+                                        var menuOption = document.getElementsByClassName('menu')[6].childNodes[2];
+                                        for(val in addedOutcomes){
+                                            var node = document.createElement("LI");
+                                            var textnode = document.createTextNode(addedOutcomes[val]);
+                                            node.appendChild(textnode);
+                                            menu.appendChild(node);
+                                        }
+                                        window.clearInterval(driverImpactPageLoad);
+                                    }
+                                    else{
+                                        window.clearInterval(driverImpactPageLoad);
+                                    }
+                                }
+                            }
+                        }
+                        var alertsTeamDriverReport = function(){
+                            if(driverTeam.test(window.location.hash) && driverTeamJapan.test(window.location.hash) && driverTeamAsia.test(window.location.hash)){
+                                console.log("Alerts Driver Team Japan > Loaded");
+                                if(typeof(document.getElementsByClassName('primaryBox')[1]) != "undefined"){
+                                    if(typeof(document.getElementsByClassName('primaryBox')[1].childNodes[1]) != "undefined"){
+                                        document.getElementsByClassName('primaryBox')[1].childNodes[1].innerHTML = "11";
+                                        if(typeof(document.getElementsByClassName('graphMetadata')[1]) != "undefined"){
+                                            if(typeof(document.getElementsByClassName('graphMetadata')[1].childNodes[1]) != "undefined"){
+                                                if(typeof(document.getElementsByClassName('graphMetadata')[1].childNodes[1].childNodes[1]) != "undefined"){
+                                                    document.getElementsByClassName('graphMetadata')[1].childNodes[1].childNodes[1].innerHTML = "11 Comments";
+                                                    window.clearInterval(alertsTeamDriverReportLoad);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        var alertsTeamDriverReportLoad = window.setInterval(alertsTeamDriverReport, 700);
                         var heatMapPageLoad = window.setInterval(heatMapPage, 700);
+                        var driverImpactPageLoad = window.setInterval(driverImpactPage, 700);
                         window.clearInterval(reportsPageLoaded);
                     }
                 }
@@ -264,6 +370,17 @@ function glintHashHandler(load){
                         });
                         var dep = JSON.parse(localStorage.getItem("departments"));
                         console.log("Dashboard Page > Loaded");
+
+                        // var updatePulseDateListen = function(){
+                        //     if(typeof(document.getElementsByClassName('sectionHeader')[0]) != "undefined"){
+                        //         if(typeof(document.getElementsByClassName('sectionHeader')[0].childNodes[1]) != "undefined"){
+                        //             if(typeof(document.getElementsByClassName('sectionHeader')[0].childNodes[1].childNodes[2]) != "undefined"){
+                        //                 document.getElementsByClassName('sectionHeader')[0].childNodes[1].childNodes[2].innerHTML = "January 2016 Pulse Results";
+                        //                 window.clearInterval(updatePulseDateLoad);
+                        //             }
+                        //         }
+                        //     }
+                        // }
                         // *************************************************************************************
                         // 
                         //this is to update the departments dashboard under Driver
@@ -275,30 +392,28 @@ function glintHashHandler(load){
                         //
                         // *************************************************************************************
                         var departmentsDashboardListen = function(){
-                            if(dashboard.test(window.location.hash)){
-                                if(dep != null){
-                                    if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1]) != "undefined"){
-                                        console.log("In Dashboard > Team Dashboard Loading...");
-                                        if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[0]) != "undefined"){
-                                            if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1]) != "undefined"){
-                                                if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1].childNodes[1]) != "undefined"){
-                                                    if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[4].childNodes[1].childNodes[1].childNodes[0])  != "undefined"){
-                                                        for(var z = 2; z < document.getElementsByClassName('aggregatesCollapsed')[1].childNodes.length-2;){
-                                                            var dashInnerVal = document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML;
-                                                            if(typeof(teamDash[dashInnerVal]) != "undefined"){
-                                                                if(dep[teamDash[dashInnerVal]] != ""){
-                                                                    document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ":" + '&nbsp;';   
-                                                                    if(dashInnerVal == "Product Management:&nbsp;"){
-                                                                        var tempLine = document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML.split(':');
-                                                                        document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ": " + tempLine[1];
-                                                                    }
+                            if(dep != null){
+                                if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1]) != "undefined"){
+                                    console.log("In Dashboard > Team Dashboard Loading...");
+                                    if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[0]) != "undefined"){
+                                        if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1]) != "undefined"){
+                                            if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[16].childNodes[1].childNodes[1]) != "undefined"){
+                                                if(typeof(document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[4].childNodes[1].childNodes[1].childNodes[0])  != "undefined"){
+                                                    for(var z = 2; z < document.getElementsByClassName('aggregatesCollapsed')[1].childNodes.length-2;){
+                                                        var dashInnerVal = document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML;
+                                                        if(typeof(teamDash[dashInnerVal]) != "undefined"){
+                                                            if(dep[teamDash[dashInnerVal]] != ""){
+                                                                document.getElementsByClassName('aggregatesCollapsed')[1].childNodes[z].childNodes[1].childNodes[1].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ":" + '&nbsp;';   
+                                                                if(dashInnerVal == "Product Management:&nbsp;"){
+                                                                    var tempLine = document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML.split(':');
+                                                                    document.getElementsByClassName('lineChart')[1].childNodes[2].childNodes[0].innerHTML = dep[teamDash[dashInnerVal]] + ": " + tempLine[1];
                                                                 }
                                                             }
-                                                            z = z + 2;
                                                         }
-                                                        console.log("Team Dashboard Loaded");
-                                                        window.clearInterval(departmentsDashboardLoad);
+                                                        z = z + 2;
                                                     }
+                                                    console.log("Team Dashboard Loaded");
+                                                    window.clearInterval(departmentsDashboardLoad);
                                                 }
                                             }
                                         }
@@ -357,7 +472,7 @@ function glintHashHandler(load){
                         }
                         // This is to update the eSat Name based on the value provided if there is a value. 
                         var eSatListen = function(){
-                            if(dep != null){
+                            if(dep != null && !(responseRateReport.test(window.location.hash))){
                                 if(typeof(dep[7]) != "undefined"){
                                     if(dep[7] != ""){
                                         if(typeof(document.getElementsByClassName('eSat')[0]) != "undefined"){
@@ -377,6 +492,7 @@ function glintHashHandler(load){
                                 window.clearInterval(eSatLoad);
                             }
                         }
+                        // var updatePulseDateLoad = window.setInterval(updatePulseDateListen, 500);
                         var eSatLoad = window.setInterval(eSatListen, 500);
                         var departmentsDashboardLoad = window.setInterval(departmentsDashboardListen, 500);
                         var departmentsTopLoad = window.setInterval(departmentsTopListen, 500);
@@ -386,7 +502,58 @@ function glintHashHandler(load){
                 // We then need to check if theyre on the comments page afterward using an interval. 
                 // If we don't then we'll never know if they visit the page without them refreshing
                 var commentsPage = function() {
-                    if(comments.test(window.location.hash)){
+                    if(driverTeamJapan.test(window.location.hash) && driverTeamAsia.test(window.location.hash)){
+                        var alertsTeamDriverComments = function(){
+                            if(driverTeamCommentsPage.test(window.location.hash) && driverTeamJapan.test(window.location.hash)){
+                                console.log("Alerts Team Driver Comments > Loaded");
+                                if(document.getElementsByClassName('commentsList')[0].childNodes[5].childNodes.length < 20){
+                                    if(typeof(document.getElementsByClassName('primaryBox')[0]) != "undefined"){
+                                        if(typeof(document.getElementsByClassName('primaryBox')[0].childNodes[1]) != "undefined"){
+                                            document.getElementsByClassName('primaryBox')[0].childNodes[1].innerHTML = "11";
+                                            if(typeof(document.getElementsByClassName('count')[0]) != "undefined"){
+                                                document.getElementsByClassName('count')[0].innerHTML = "(11)";
+                                            }
+                                            if(typeof(document.getElementsByClassName('count')[2]) != "undefined"){
+                                                document.getElementsByClassName('count')[2].innerHTML = "(3)";
+                                            }
+                                            if(typeof(document.getElementsByClassName('dunkTank')[0])!= "undefined"){
+                                                if(typeof(document.getElementsByClassName('dunkTank')[0].childNodes[3])!= "undefined"){
+                                                    if(typeof(document.getElementsByClassName('dunkTank')[0].childNodes[3].childNodes[1])!= "undefined"){
+                                                        document.getElementsByClassName('dunkTank')[0].childNodes[3].innerHTML = "31%";
+                                                        document.getElementsByClassName('dunkTank')[0].childNodes[1].style.height = "31%";
+                                                        if(typeof(document.getElementsByClassName('metadata')[3].childNodes[1]) != "undefined"){
+                                                            document.getElementsByClassName('metadata')[3].childNodes[1].innerHTML = "11 commented";
+                                                        }
+                                                        if(typeof(document.getElementsByClassName('commentsList')[0]) != "undefined"){
+                                                            if(typeof(document.getElementsByClassName('commentsList')[0].childNodes[5]) != "undefined"){
+                                                                if(typeof(document.getElementsByClassName('commentsList')[0].childNodes[5].childNodes[4]) != "undefined"){
+                                                                    for(alert in AlertsWords){
+                                                                        var textnode = document.getElementsByClassName('commentsList')[0].childNodes[5].childNodes[4];
+                                                                        var cln = textnode.cloneNode(true);
+                                                                        cln.childNodes[3].childNodes[1].innerHTML = AlertsWords[alert].words;
+                                                                        cln.childNodes[3].childNodes[6].childNodes[1].className = AlertsWords[alert].sentiment;
+                                                                        document.getElementsByClassName('commentsList')[0].childNodes[5].appendChild(cln); 
+                                                                    }
+                                                                    window.clearInterval(alertsTeamDriverCommentsLoad);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else{
+                                    console.log("Alerts Team Driver Comments > Set");
+                                    window.clearInterval(alertsTeamDriverCommentsLoad);
+                                }
+                            }
+                        }
+                        var alertsTeamDriverCommentsLoad = window.setInterval(alertsTeamDriverComments, 700);
+                        window.clearInterval(commentsPageLoaded);
+                    }
+                    if(comments.test(window.location.hash) && (!(driverTeamCommentsPage.test(window.location.hash)) && !(driverTeamJapan.test(window.location.hash)) && !(driverTeamAsia.test(window.location.hash)))){
                         console.log("Comments Page > Loaded");
                         // if the comment page exists then we need to listen for the values. We then use the careerPathingWords
                         // in order to update the comments for Available Career Path. 

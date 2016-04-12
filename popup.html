@@ -38,6 +38,15 @@
             padding: 0px 25px;
             margin-top: -50px;
         }
+        .impact-title{
+            color: #33adda;
+            font-size: 12px;
+            font-weight: 200;
+            text-align: center;
+            width: 250px;
+            padding: 0px 25px;
+            margin-top: 50px;
+        }
         .change-option-container{
             color: #33adda;
             font-size: 12px;
@@ -96,7 +105,7 @@
             color: #fff;
             cursor: pointer;
         }
-        #submitted, #cleared, #department-submitted, #department-cleared{
+        #submitted, #cleared, #department-submitted, #department-cleared, #impact-submitted, #impact-cleared{
             display: none;
         }
         input[type="text"], input[type="password"], textarea, select { 
@@ -118,7 +127,7 @@
             margin-top: 15px;
             cursor: pointer;          
         }
-        #edit-company, #edit-dashboard-departments-container{
+        #edit-company, #edit-dashboard-departments-container, #edit-impact-drop-down-container{
             display: none;
         }
         #edit-dashboard-departments-container{
@@ -127,7 +136,7 @@
         #edit-dashboard-result{
             /*margin-top: 100px;*/
         }
-        #edit-company, #edit-dashboard{
+        #edit-company, #edit-dashboard, #edit-impact{
             cursor: pointer;
         }
         .extra-padding{
@@ -141,6 +150,9 @@
             padding: 0px 30px;
             color: #33adda; 
             font-size: 12px;
+        }
+        .option-spacing{
+            padding: 10px 0;
         }
     </style>
     <script src="popup.js"></script>
@@ -229,12 +241,60 @@
             The department/esat names will go back to their original names.
         </div>
     </div>
+    <div id = "edit-impact-drop-down-container">
+        <div class = "impact-title">
+            These will replace the Drive Impact Outcomes in the Driver Impact report drop down.
+            NOTE: These will not do anything but help with telling a story. 
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "first-outcome" class = "company-field" type="text" name="first-dep" placeholder = "Customer Satisfaction">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "second-outcome" class = "company-field" type="text" name="second-dep" placeholder = "Sales">
+        </div>
+        <div class = "form-container extra-padding">
+            <input id = "third-outcome" class = "company-field" type="text" name="third-dep" placeholder = "Operational Efficiency">
+        </div>
+        <div class = "form-container extra-padding">
+            <div id = "impact-button" class = "submit-department">
+                Submit
+            </div>
+        </div>
+        <div class = "form-container extra-padding">
+            <div id = "impact-clear-button" class = "submit-department">
+                Clear Settings
+            </div>
+        </div>
+    </div>
+    <div id = "edit-impact-result">
+        <div id = "impact-submitted" class = "submittedForm">
+            The outcome names have been submitted. Here are the names that will appear:
+            <div id = "impact-submit-result">
+            </div>
+        </div>
+        <div id = "impact-cleared" class = "submittedForm">
+            The outcome names will go back to their original names.
+        </div>
+    </div>
+    <div id = "edit-dashboard-result">
+        <div id = "department-submitted" class = "submittedForm">
+            The department/esat names have been submitted. Here are the names that will appear:
+            <div id = "department-submit-result">
+            </div>
+        </div>
+        <div id = "department-cleared" class = "submittedForm">
+            The department/esat names will go back to their original names.
+        </div>
+    </div>
     <div class = "change-option-container">
-        <div id = "edit-dashboard">
+        <div id = "edit-dashboard" class = "option-spacing">
             Edit Dashboard Settings >
         </div>
-        <div id = "edit-company">
+        <div id = "edit-company" class = "option-spacing">
             Edit Demo Company Name >
+        </div>
+        <div id = "edit-impact" class = "option-spacing">
+            Edit Outcomes Drop Down >
         </div>
     </div>
 </body>
